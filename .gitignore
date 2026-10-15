@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+
+# Private training data and generated model/report files
+data/
+models/
+reports/
+*.csv
+*.joblib
+*.pkl
+
+.DS_Store
+Thumbs.db
