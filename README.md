@@ -92,7 +92,7 @@ $env:LOAN_MODEL_PATH = "C:\path\to\loan_model.joblib"
 streamlit run app.py
 ```
 
-The app uses the training schema stored in the artifact to render inputs and shows the predicted class and its estimated approval probability. These model outputs are not explanations or guarantees.
+The app uses the training schema stored in the artifact to render inputs and shows the predicted class with the model's uncalibrated approval score. Its **What influenced this result?** panel compares each entered value with its training median or most-common category one field at a time. This is a sensitivity check, not a causal explanation or a guarantee.
 
 ## Publish as a mobile-friendly website
 

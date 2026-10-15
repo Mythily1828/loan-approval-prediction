@@ -9,7 +9,11 @@ from typing import Any
 import joblib
 import streamlit as st
 
-from loan_approval import DEFAULT_MODEL_PATH, predict_approval
+from loan_approval import (
+    DEFAULT_MODEL_PATH,
+    explain_approval_sensitivity,
+    predict_approval,
+)
 
 
 st.set_page_config(page_title="Loan Approval Prediction", page_icon="🏦", layout="centered")
@@ -85,13 +89,32 @@ with st.form("applicant_form"):
 if submitted:
     prediction, probability = predict_approval(bundle, applicant)
     display_prediction = str(prediction)
+    result = (
+        f"Model output: **{display_prediction}** "
+        f"(model-estimated approval score: {probability:.1%}; "
+        "not a verified or calibrated probability)"
+    )
     if prediction == bundle["positive_label"]:
-        st.success(
-            f"Model output: **{display_prediction}** "
-            f"(estimated approval probability: {probability:.1%})"
-        )
+        st.success(result)
     else:
-        st.info(
-            f"Model output: **{display_prediction}** "
-            f"(estimated approval probability: {probability:.1%})"
+        st.info(result)
+    st.caption(
+        "This educational model is not validated for real credit decisions. "
+        "The score is not a calibrated probability."
+    )
+    with st.expander("What influenced this result?"):
+        st.write(
+            "Each row changes one entered field to that field's median (numeric) "
+            "or most common value (category) in the training data, then compares "
+            "the model score. A positive change means the entered value raised "
+            "the score relative to that typical value."
+        )
+        st.caption(
+            "This is a one-field-at-a-time sensitivity check, not a causal explanation. "
+            "It does not account for interactions or related fields changing together."
+        )
+        st.dataframe(
+            explain_approval_sensitivity(bundle, applicant),
+            hide_index=True,
+            width="stretch",
         )

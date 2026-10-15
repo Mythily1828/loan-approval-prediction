@@ -6,6 +6,7 @@ import joblib
 import pandas as pd
 
 from loan_approval import (
+    explain_approval_sensitivity,
     infer_approved_label,
     make_demo_data,
     predict_approval,
@@ -54,6 +55,11 @@ class LoanApprovalTests(unittest.TestCase):
             self.assertIn(prediction, {"Y", "N"})
             self.assertGreaterEqual(probability, 0.0)
             self.assertLessEqual(probability, 1.0)
+            sensitivity = explain_approval_sensitivity(saved, applicant)
+            self.assertEqual(len(sensitivity), len(saved["feature_schema"]))
+            self.assertIn(
+                "Score change vs typical (percentage points)", sensitivity.columns
+            )
 
     def test_missing_target_is_reported(self):
         data = make_demo_data(rows=100).drop(columns=["Loan_Status"])

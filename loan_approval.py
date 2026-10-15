@@ -484,6 +484,36 @@ def predict_approval(
     return predicted, float(probabilities[positive_index])
 
 
+def explain_approval_sensitivity(
+    bundle: dict[str, Any], applicant: dict[str, Any]
+) -> pd.DataFrame:
+    """Compare each entered value with its training median/mode, one field at a time."""
+    _, current_score = predict_approval(bundle, applicant)
+    comparisons = []
+    for field in bundle["feature_schema"]:
+        name = field["name"]
+        typical_value = field["default"]
+        alternate_applicant = dict(applicant)
+        alternate_applicant[name] = typical_value
+        _, typical_score = predict_approval(bundle, alternate_applicant)
+        comparisons.append(
+            {
+                "Field": name.replace("_", " "),
+                "Entered value": str(applicant[name]),
+                "Typical training value": str(typical_value),
+                "Score change vs typical (percentage points)": round(
+                    (current_score - typical_score) * 100, 1
+                ),
+            }
+        )
+    return pd.DataFrame(comparisons).sort_values(
+        "Score change vs typical (percentage points)",
+        key=lambda changes: changes.abs(),
+        ascending=False,
+        ignore_index=True,
+    )
+
+
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Train loan approval models and save the best holdout performer."
