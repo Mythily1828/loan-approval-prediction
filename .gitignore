@@ -7,11 +7,13 @@ venv/
 
 # Private training data and generated model/report files
 data/
-models/
 reports/
 *.csv
 *.joblib
 *.pkl
+!models/
+models/*
+!models/loan_model.joblib
 
 .DS_Store
 Thumbs.db

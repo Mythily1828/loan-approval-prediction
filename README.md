@@ -10,6 +10,7 @@ An educational, end-to-end machine-learning project that compares Logistic Regre
 | --- | --- |
 | `loan_approval.py` | Dataset validation, preprocessing, stratified model evaluation, report generation, and model saving |
 | `app.py` | Streamlit UI that reads the saved model and builds fields from its training schema |
+| `models/loan_model.joblib` | Trained model artifact used by the hosted app |
 | `tests/test_loan_approval.py` | Focused tests using generated synthetic data |
 | `requirements.txt` | Runtime dependencies |
 
@@ -93,6 +94,17 @@ streamlit run app.py
 
 The app uses the training schema stored in the artifact to render inputs and shows the predicted class and its estimated approval probability. These model outputs are not explanations or guarantees.
 
+## Publish as a mobile-friendly website
+
+The Streamlit app is a responsive website, so people can open its hosted URL from a mobile browser without installing an app. To deploy it on [Streamlit Community Cloud](https://share.streamlit.io/):
+
+1. Push this project to a GitHub repository that your Streamlit account can access. The entry file is `app.py`.
+2. Sign in to Streamlit Community Cloud with the GitHub account that can access the repository and choose **Create app**.
+3. Select the repository, the `main` branch, and `app.py`, then deploy.
+4. Open the generated `*.streamlit.app` URL on a phone or share it with others.
+
+The trained `models/loan_model.joblib` artifact is included so the hosted app can make predictions without uploading the CSV or retraining in the cloud. This model was trained from the supplied dataset, and publishing it makes the fitted model publicly downloadable with the repository. The source CSV and generated reports remain excluded from Git. Only publish the repository and model if you are authorized to share them. Keep the artifact and dependency versions in sync; retrain the model after changing the pinned scikit-learn or related package versions.
+
 ## Tests
 
 ```powershell
@@ -101,4 +113,4 @@ python -m unittest discover -s tests -v
 
 ## Data and model safety
 
-Raw data, trained models, and generated reports are ignored by Git by default. Only train on data you are authorized to use. A Joblib artifact can execute code when loaded; load only artifacts you created or otherwise trust.
+Raw data and generated reports are ignored by Git by default. The trained model artifact is intentionally included for hosted deployment. Only train on data you are authorized to use and only publish a model you are authorized to share. A Joblib artifact can execute code when loaded; load only artifacts you created or otherwise trust.
